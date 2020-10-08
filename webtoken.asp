@@ -3,7 +3,7 @@
 expire_time = {EXPIRE_DATE} 'UNIX TIME STAMP
 customKey = "{CUSTOM_KEY}" '콜러스 콘솔의 설정 페이지 -> 사용자 키
 service_account_key = "{SERVICE_ACCOUNT_KEY}" '콜러스 콘솔의 설정 페이지 -> 보안 키
-client_user_id = "as1as" '홈페이지 사용자 아이디
+client_user_id = "{CLIENT_USER_ID}" '홈페이지 사용자 아이디
 Dim media_content_keys(0)
 Set media_content_key1 = jsObject()
 media_content_key1("mckey") = "{MEDIA_CONTENT_KEY}" '미디어 컨텐츠 키, 콜러스 콘솔의 채널 페이지 -> 컨텐츠 상세 정보에서 확인
