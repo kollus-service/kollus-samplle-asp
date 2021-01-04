@@ -5,7 +5,7 @@ url = "http://api.kr.kollus.com/0/media_auth/upload/create_url?access_token=" & 
 postData="expire_time={EXPIRE_TIME}&title={TITLE}"
 Set header = CreateObject("MSXML2.ServerXMLHTTP.3.0")
 header.Open "POST", url, False
-header.SetRequestHeader "Content-Type", "application/json"
+header.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 header.Send postData
 responseText = header.responseText
 Set result = New JSONobject.parse(responseText)
