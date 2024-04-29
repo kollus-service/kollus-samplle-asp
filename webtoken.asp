@@ -14,6 +14,6 @@ jwt = createWebtoken(media_content_keys, client_user_id, expire_time, customKey,
 <html lang="ko">
 <body>
 
-<iframe id='player'  src="http://v.kr.kollus.com/s?jwt=<%=jwt%>&custom_key=<%=customKey%>" width="800" height="600" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="autoplay"></iframe>
+<iframe id='player'  src="https://v.kr.kollus.com/s?jwt=<%=jwt%>&custom_key=<%=customKey%>" width="800" height="600" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="autoplay"></iframe>
 </body>
 </html>
