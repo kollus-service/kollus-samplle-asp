@@ -2,7 +2,7 @@
 <!-- #include virtual="/lib/JSON_UTIL_0.1.1.asp" -->
 <%
 
-Const sBASE_64_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+sBASE_64_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 function Base64encode(ByVal asContents)
         Dim lnPosition
@@ -62,6 +62,7 @@ JWTHead("alg") = "HS256"
 Set Payload = jsObject()
 Payload("expt") = expire_time
 Payload("cuid") = client_user_id
+'Payload("playback_rates") = playbackRates
 
 'mck_length = Ubound(media_content_key)
 'Dim temp()
@@ -83,24 +84,94 @@ result = tmp+"."+result
 createWebtoken = result
 End Function
 
-Function createWebtoken2(media_content_key, expire_time, customKey, service_account_key)
+Function createWebtoken_next(media_content_key, client_user_id, expire_time, customKey, service_account_key)
 Dim Payload, mc, JWTHead
 Set JWTHead = jsObject()
 JWTHead("typ") = "JWT"
 JWTHead("alg") = "HS256"
 Set Payload = jsObject()
 Payload("expt") = expire_time
-Set cdn = jsObject()
-cdn("type") = "kollus"
-cdn("use_ip_validation") = True
-cdn("use_duplication_block") = false
+Payload("cuid") = client_user_id
+Payload("next_episode") = true
+'Payload("playback_rates") = playbackRates
+
 'mck_length = Ubound(media_content_key)
 'Dim temp()
 'ReDim temp(mck_length)
 Payload("mc") = media_content_key
-Payload("cuid") = "test"
-Set Payload("cdn") = cdn
-'Payload("live") = liveInfo
+
+tmp = Base64ToSafeBase64(tmp)
+tmp = Base64encode(toJSON(JWTHead)) + "." + Base64encode(toJSON(Payload))
+'tmp = Base64ToSafeBase64(tmp)
+Dim sha256
+Set sha256 = GetObject( "script:" & Server.MapPath("/lib/sha256.wsc") )
+sha256.hexcase = 0
+
+Dim Return : result = ""
+
+result = sha256.b64_hmac_sha256(service_account_key, tmp)
+result = Server.URLEncode(result)
+result = tmp+"."+result
+createWebtoken_next = result
+End Function
+
+Function createWebtoken_playback(media_content_key, client_user_id, expire_time, customKey, service_account_key,playbackRates)
+Dim Payload, mc, JWTHead
+Set JWTHead = jsObject()
+JWTHead("typ") = "JWT"
+JWTHead("alg") = "HS256"
+Set Payload = jsObject()
+Payload("expt") = expire_time
+Payload("cuid") = client_user_id
+Payload("playback_rates") = playbackRates
+
+'mck_length = Ubound(media_content_key)
+'Dim temp()
+'ReDim temp(mck_length)
+Payload("mc") = media_content_key
+
+tmp = Base64ToSafeBase64(tmp)
+tmp = Base64encode(toJSON(JWTHead)) + "." + Base64encode(toJSON(Payload))
+'tmp = Base64ToSafeBase64(tmp)
+Dim sha256
+Set sha256 = GetObject( "script:" & Server.MapPath("/lib/sha256.wsc") )
+sha256.hexcase = 0
+
+Dim Return : result = ""
+
+result = sha256.b64_hmac_sha256(service_account_key, tmp)
+result = Server.URLEncode(result)
+result = tmp+"."+result
+createWebtoken_playback = result
+End Function
+
+
+Function createWebtoken_callback(service_account_key, results)
+Set JWTHead = New JSONobject	
+JWTHead.add "typ", "JWT"
+JWTHead.add "alg", "HS256"
+set JSON = New JSONobject
+tmp = Base64encode(JWTHead.Serialize()) + "." + Base64encode(results.Serialize())
+Dim sha256
+Set sha256 = GetObject( "script:" & Server.MapPath("/lib/sha256.wsc") )
+sha256.hexcase = 0
+Dim Return : result = ""
+result = sha256.b64_hmac_sha256(service_account_key, tmp)
+result = tmp+"."+result
+createWebtoken2 = result
+End Function
+
+Function createWebtoken2(media_content_key, client_user_id, expire_time, customKey, service_account_key)
+Dim Payload, mc, JWTHead
+Set JWTHead = jsObject()
+JWTHead("typ") = "JWT"
+JWTHead("alg") = "HS256"
+Set Payload = jsObject()
+Payload("expt") = expire_time
+Payload("cuid") = client_user_id
+
+Payload("mc") = media_content_key
+
 tmp = Base64encode(toJSON(JWTHead)) + "." + Base64encode(toJSON(Payload))
 
 Dim sha256
@@ -110,7 +181,7 @@ sha256.hexcase = 0
 Dim Return : result = ""
 
 result = sha256.b64_hmac_sha256(service_account_key, tmp)
-result = Server.URLEncode(result)
+
 result = tmp+"."+result
 createWebtoken2 = result
 End Function
@@ -163,7 +234,6 @@ Set sha256 = GetObject( "script:" & Server.MapPath("/lib/sha256.wsc") )
 sha256.hexcase = 0
 
 Dim Return : result = ""
-
 result = sha256.b64_hmac_sha256(service_account_key, tmp)
 result = Server.URLEncode(result)
 result = tmp+"."+result
@@ -181,6 +251,7 @@ Set Payload = jsObject()
 Payload("expt") = expire_time
 Payload("cuid") = client_user_id
 Payload("mc") = media_content_key
+
 
 Set vwc = jsObject()
 vwc("font_size") = font_size
