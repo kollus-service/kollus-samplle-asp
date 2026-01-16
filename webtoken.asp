@@ -1,4 +1,4 @@
-<!-- #include virtual="/lib/webToken.asp" -->
+<!-- #include file="lib/webToken.asp" -->
 <%
 expire_time = {EXPIRE_DATE} 'UNIX TIME STAMP
 customKey = "{CUSTOM_KEY}" '콜러스 콘솔의 설정 페이지 -> 사용자 키
